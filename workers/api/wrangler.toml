@@ -1,28 +1,19 @@
 name = "alumni-book-api"
 main = "src/index.ts"
 compatibility_date = "2024-10-22"
-
-[[migrations]]
-tag = "v1"
-new_classes = []
-new_sqlite_classes = []
-new_d1_databases = []
-[[migrations.migration]]
-tag = "v1"
-new_classes = []
-new_sqlite_classes = []
-new_d1_databases = []
+workers_dev = true
 
 [vars]
-JWT_SECRET = "change-me-in-production"
-CORS_ORIGIN = "https://your-site.github.io"
+JWT_SECRET = "alumni-book-jwt-secret-change-me-2026"
+CORS_ORIGIN = "https://chenxing0026.github.io"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "alumni-book-db"
-database_id = "your-d1-database-id"
+database_id = "7068f542-0b92-482f-9fa4-37971ceffa63"
 migrations_dir = "migrations"
 
-[[r2_buckets]]
-binding = "R2"
-bucket_name = "alumni-book-assets"
+# R2 存储桶 - 需要在 Cloudflare Dashboard 启用 R2 后取消注释
+# [[r2_buckets]]
+# binding = "R2"
+# bucket_name = "alumni-book-assets"

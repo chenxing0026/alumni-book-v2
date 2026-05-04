@@ -149,6 +149,9 @@ app.get('/api/files/:key+', async (c) => {
   if (!key) {
     return c.json({ success: false, message: '文件路径无效' }, 400)
   }
+  if (!c.env.R2) {
+    return c.json({ success: false, message: '文件存储(R2)未启用' }, 503)
+  }
   const object = await c.env.R2.get(key)
 
   if (!object) {

@@ -12,6 +12,10 @@ uploadRoutes.post('/upload', async (c) => {
   const db = c.env.DB
   const r2 = c.env.R2
 
+  if (!r2) {
+    return c.json({ success: false, message: '文件存储(R2)未启用，请在 Cloudflare Dashboard 启用 R2' }, 503)
+  }
+
   const formData = await c.req.formData()
   const file = formData.get('file') as File | null
   const type = formData.get('type') as string
@@ -44,17 +48,14 @@ uploadRoutes.post('/upload', async (c) => {
 
   const publicUrl = `/api/files/${r2Key}`
 
-  // 如果是头像，更新学生记录
   if (type === 'avatar' && slug) {
     await db.prepare('UPDATE students SET avatar_url = ? WHERE slug = ?').bind(publicUrl, slug).run()
   }
 
-  // 如果是音乐，更新学生记录
   if (type === 'music' && slug) {
     await db.prepare('UPDATE students SET music_url = ? WHERE slug = ?').bind(publicUrl, slug).run()
   }
 
-  // 如果是照片，创建照片记录
   if (type === 'photo' && albumId) {
     const photoId = `photo_${timestamp}_${Math.random().toString(36).slice(2, 6)}`
     await db.prepare(
