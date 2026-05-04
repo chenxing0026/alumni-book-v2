@@ -2,7 +2,7 @@ name: Deploy Admin
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
     paths:
       - 'packages/admin/**'
       - 'packages/shared/**'
