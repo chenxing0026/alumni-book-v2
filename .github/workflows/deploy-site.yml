@@ -1,11 +1,11 @@
-name: Deploy Site
+name: Deploy Site & Admin
 
 on:
   push:
     branches: [main, master]
     paths:
-      - 'packages/site/**'
-      - 'packages/shared/**'
+      - 'packages/**'
+      - 'workers/**'
 
 permissions:
   contents: read
@@ -38,9 +38,19 @@ jobs:
       - name: Build site
         run: pnpm --filter site build
 
+      - name: Build admin
+        run: pnpm --filter admin build
+
+      - name: Prepare deployment
+        run: |
+          mkdir -p deploy
+          cp -r packages/site/dist/* deploy/
+          mkdir -p deploy/admin
+          cp -r packages/admin/dist/* deploy/admin/
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: packages/site/dist
+          path: deploy
 
   deploy:
     needs: build

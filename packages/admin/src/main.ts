@@ -4,19 +4,21 @@ import App from './App.vue'
 import '@alumni/shared/src/tokens.css'
 import './styles/admin.css'
 
+const base = import.meta.env.BASE_URL || '/'
+
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(base + 'admin/'),
   routes: [
     {
-      path: '/admin/login',
+      path: '/login',
       name: 'login',
       component: () => import('./views/LoginView.vue'),
     },
     {
-      path: '/admin',
+      path: '/',
       component: () => import('./views/AdminLayout.vue'),
       children: [
-        { path: '', redirect: '/admin/dashboard' },
+        { path: '', redirect: '/dashboard' },
         { path: 'dashboard', name: 'dashboard', component: () => import('./views/DashboardView.vue') },
         { path: 'students', name: 'students', component: () => import('./views/StudentsView.vue') },
         { path: 'students/:id', name: 'student-edit', component: () => import('./views/StudentEditView.vue') },
