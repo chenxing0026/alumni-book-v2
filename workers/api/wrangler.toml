@@ -1,0 +1,28 @@
+name = "alumni-book-api"
+main = "src/index.ts"
+compatibility_date = "2024-10-22"
+
+[[migrations]]
+tag = "v1"
+new_classes = []
+new_sqlite_classes = []
+new_d1_databases = []
+[[migrations.migration]]
+tag = "v1"
+new_classes = []
+new_sqlite_classes = []
+new_d1_databases = []
+
+[vars]
+JWT_SECRET = "change-me-in-production"
+CORS_ORIGIN = "https://your-site.github.io"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "alumni-book-db"
+database_id = "your-d1-database-id"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "alumni-book-assets"

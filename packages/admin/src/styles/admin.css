@@ -1,0 +1,143 @@
+/* ── 管理后台全局样式 ── */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--type-body-md-size);
+  color: var(--color-ink);
+  background-color: var(--color-canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+input, textarea, select { font-family: inherit; font-size: inherit; }
+img { max-width: 100%; display: block; }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 12px 20px;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: var(--type-button-size);
+  font-weight: var(--type-button-weight);
+  border-radius: var(--rounded-md);
+  transition: background-color 0.15s ease;
+}
+.btn-primary:hover { background-color: var(--color-primary-active); text-decoration: none; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 12px 20px;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-size: var(--type-button-size);
+  font-weight: var(--type-button-weight);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-md);
+  transition: background-color 0.15s ease;
+}
+.btn-secondary:hover { background-color: var(--color-surface-soft); text-decoration: none; }
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 12px 20px;
+  background-color: var(--color-error);
+  color: #fff;
+  font-size: var(--type-button-size);
+  font-weight: var(--type-button-weight);
+  border-radius: var(--rounded-md);
+  transition: opacity 0.15s ease;
+}
+.btn-danger:hover { opacity: 0.9; text-decoration: none; }
+
+.text-input {
+  height: 40px;
+  padding: 10px 14px;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-size: var(--type-body-md-size);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-md);
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s ease;
+}
+.text-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.15); }
+.text-input::placeholder { color: var(--color-muted-soft); }
+
+.textarea {
+  padding: 10px 14px;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-size: var(--type-body-md-size);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-md);
+  outline: none;
+  width: 100%;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.15s ease;
+}
+.textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.15); }
+
+.form-group { margin-bottom: var(--spacing-md); }
+.form-label {
+  display: block;
+  font-size: var(--type-body-sm-size);
+  font-weight: 500;
+  color: var(--color-body-strong);
+  margin-bottom: var(--spacing-xs);
+}
+
+.card {
+  background-color: var(--color-surface-card);
+  border-radius: var(--rounded-lg);
+  padding: var(--spacing-xl);
+}
+
+.page-header {
+  margin-bottom: var(--spacing-xl);
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: var(--type-display-sm-size);
+  font-weight: var(--type-display-sm-weight);
+  color: var(--color-ink);
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: var(--rounded-md);
+  font-size: var(--type-body-sm-size);
+  z-index: 1000;
+  animation: toastIn 0.3s ease;
+}
+.toast-success { background-color: var(--color-success); color: #fff; }
+.toast-error { background-color: var(--color-error); color: #fff; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

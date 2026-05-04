@@ -1,0 +1,85 @@
+import { Hono } from 'hono'
+
+type Bindings = {
+  DB: D1Database
+  R2: R2Bucket
+  JWT_SECRET: string
+}
+
+export const studentsRoutes = new Hono<{ Bindings: Bindings }>()
+
+// 创建学生
+studentsRoutes.post('/students', async (c) => {
+  const db = c.env.DB
+  const body = await c.req.json()
+  const { name, slug } = body
+
+  if (!name || !slug) {
+    return c.json({ success: false, message: '姓名和 slug 必填' }, 400)
+  }
+
+  const existing = await db.prepare('SELECT id FROM students WHERE slug = ?').bind(slug).first()
+  if (existing) {
+    return c.json({ success: false, message: 'slug 已存在' }, 409)
+  }
+
+  const id = `stu_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+  const info = JSON.stringify({ name, nickname: '', gender: '', birthday: '', school: '', class: '', graduationYear: '', motto: '' })
+
+  await db.prepare(
+    'INSERT INTO students (id, name, slug, info) VALUES (?, ?, ?, ?)'
+  ).bind(id, name, slug, info).run()
+
+  return c.json({ success: true, data: { id, name, slug } })
+})
+
+// 更新学生
+studentsRoutes.put('/students/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  const db = c.env.DB
+  const body = await c.req.json()
+
+  const existing = await db.prepare('SELECT id FROM students WHERE slug = ?').bind(slug).first()
+  if (!existing) {
+    return c.json({ success: false, message: '学生不存在' }, 404)
+  }
+
+  const fields: string[] = []
+  const values: any[] = []
+
+  if (body.name !== undefined) { fields.push('name = ?'); values.push(body.name) }
+  if (body.avatarUrl !== undefined) { fields.push('avatar_url = ?'); values.push(body.avatarUrl) }
+  if (body.musicUrl !== undefined) { fields.push('music_url = ?'); values.push(body.musicUrl) }
+  if (body.musicTitle !== undefined) { fields.push('music_title = ?'); values.push(body.musicTitle) }
+  if (body.musicAutoplay !== undefined) { fields.push('music_autoplay = ?'); values.push(body.musicAutoplay ? 1 : 0) }
+  if (body.backgroundUrl !== undefined) { fields.push('background_url = ?'); values.push(body.backgroundUrl) }
+  if (body.backgroundColor !== undefined) { fields.push('background_color = ?'); values.push(body.backgroundColor) }
+  if (body.info !== undefined) { fields.push('info = ?'); values.push(JSON.stringify(body.info)) }
+  if (body.photos !== undefined) { fields.push('photos = ?'); values.push(JSON.stringify(body.photos)) }
+
+  if (fields.length === 0) {
+    return c.json({ success: false, message: '没有要更新的字段' }, 400)
+  }
+
+  fields.push("updated_at = datetime('now')")
+  values.push(slug)
+
+  await db.prepare(`UPDATE students SET ${fields.join(', ')} WHERE slug = ?`).bind(...values).run()
+
+  return c.json({ success: true, message: '更新成功' })
+})
+
+// 删除学生
+studentsRoutes.delete('/students/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  const db = c.env.DB
+
+  const existing = await db.prepare('SELECT id FROM students WHERE slug = ?').bind(slug).first()
+  if (!existing) {
+    return c.json({ success: false, message: '学生不存在' }, 404)
+  }
+
+  await db.prepare('DELETE FROM students WHERE slug = ?').bind(slug).run()
+
+  return c.json({ success: true, message: '删除成功' })
+})

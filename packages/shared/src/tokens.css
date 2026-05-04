@@ -1,0 +1,131 @@
+/**
+ * 同学录 v2 · Claude 设计系统令牌
+ * 参考: DESIGN-claude.md
+ */
+
+:root {
+  /* ── 色彩: 品牌 & 强调 ── */
+  --color-primary: #cc785c;
+  --color-primary-active: #a9583e;
+  --color-primary-disabled: #e6dfd8;
+  --color-accent-teal: #5db8a6;
+  --color-accent-amber: #e8a55a;
+
+  /* ── 色彩: 表面 ── */
+  --color-canvas: #faf9f5;
+  --color-surface-soft: #f5f0e8;
+  --color-surface-card: #efe9de;
+  --color-surface-cream-strong: #e8e0d2;
+  --color-surface-dark: #181715;
+  --color-surface-dark-elevated: #252320;
+  --color-surface-dark-soft: #1f1e1b;
+
+  /* ── 色彩: 文本 ── */
+  --color-ink: #141413;
+  --color-body-strong: #252523;
+  --color-body: #3d3d3a;
+  --color-muted: #6c6a64;
+  --color-muted-soft: #8e8b82;
+  --color-on-primary: #ffffff;
+  --color-on-dark: #faf9f5;
+  --color-on-dark-soft: #a09d96;
+
+  /* ── 色彩: 边框 ── */
+  --color-hairline: #e6dfd8;
+  --color-hairline-soft: #ebe6df;
+
+  /* ── 色彩: 语义 ── */
+  --color-success: #5db872;
+  --color-warning: #d4a017;
+  --color-error: #c64545;
+
+  /* ── 圆角 ── */
+  --rounded-xs: 4px;
+  --rounded-sm: 6px;
+  --rounded-md: 8px;
+  --rounded-lg: 12px;
+  --rounded-xl: 16px;
+  --rounded-pill: 9999px;
+
+  /* ── 间距 ── */
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-section: 96px;
+
+  /* ── 字体 ── */
+  --font-display: 'Cormorant Garamond', 'Tiempos Headline', Garamond, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* ── 排版: 显示 ── */
+  --type-display-xl-size: 64px;
+  --type-display-xl-weight: 500;
+  --type-display-xl-line-height: 1.05;
+  --type-display-xl-letter-spacing: -1.5px;
+
+  --type-display-lg-size: 48px;
+  --type-display-lg-weight: 500;
+  --type-display-lg-line-height: 1.1;
+  --type-display-lg-letter-spacing: -1px;
+
+  --type-display-md-size: 36px;
+  --type-display-md-weight: 500;
+  --type-display-md-line-height: 1.15;
+  --type-display-md-letter-spacing: -0.5px;
+
+  --type-display-sm-size: 28px;
+  --type-display-sm-weight: 500;
+  --type-display-sm-line-height: 1.2;
+  --type-display-sm-letter-spacing: -0.3px;
+
+  /* ── 排版: 标题 ── */
+  --type-title-lg-size: 22px;
+  --type-title-lg-weight: 500;
+  --type-title-lg-line-height: 1.3;
+
+  --type-title-md-size: 18px;
+  --type-title-md-weight: 500;
+  --type-title-md-line-height: 1.4;
+
+  --type-title-sm-size: 16px;
+  --type-title-sm-weight: 500;
+  --type-title-sm-line-height: 1.4;
+
+  /* ── 排版: 正文 ── */
+  --type-body-md-size: 16px;
+  --type-body-md-weight: 400;
+  --type-body-md-line-height: 1.55;
+
+  --type-body-sm-size: 14px;
+  --type-body-sm-weight: 400;
+  --type-body-sm-line-height: 1.55;
+
+  --type-caption-size: 13px;
+  --type-caption-weight: 500;
+  --type-caption-line-height: 1.4;
+
+  --type-caption-uppercase-size: 12px;
+  --type-caption-uppercase-weight: 500;
+  --type-caption-uppercase-line-height: 1.4;
+  --type-caption-uppercase-letter-spacing: 1.5px;
+
+  /* ── 排版: 按钮/导航 ── */
+  --type-button-size: 14px;
+  --type-button-weight: 500;
+  --type-button-line-height: 1;
+
+  --type-nav-link-size: 14px;
+  --type-nav-link-weight: 500;
+  --type-nav-link-line-height: 1.4;
+
+  /* ── 组件: 顶部导航 ── */
+  --nav-height: 64px;
+
+  /* ── 阴影 ── */
+  --shadow-subtle: 0 1px 3px rgba(20, 20, 19, 0.08);
+}
