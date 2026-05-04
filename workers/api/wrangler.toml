@@ -13,7 +13,6 @@ database_name = "alumni-book-db"
 database_id = "7068f542-0b92-482f-9fa4-37971ceffa63"
 migrations_dir = "migrations"
 
-# R2 存储桶 - 需要在 Cloudflare Dashboard 启用 R2 后取消注释
-# [[r2_buckets]]
-# binding = "R2"
-# bucket_name = "alumni-book-assets"
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "alumni-book-assets"
