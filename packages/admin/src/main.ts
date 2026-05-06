@@ -4,10 +4,8 @@ import App from './App.vue'
 import '@alumni/shared/src/tokens.css'
 import './styles/admin.css'
 
-const base = import.meta.env.BASE_URL || '/'
-
 const router = createRouter({
-  history: createWebHistory(base + 'admin/'),
+  history: createWebHistory('/alumni-book-v2/admin/'),
   routes: [
     {
       path: '/login',
