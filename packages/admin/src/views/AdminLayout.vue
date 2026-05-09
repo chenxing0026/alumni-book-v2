@@ -6,10 +6,10 @@
         <span class="brand-text">同学录管理</span>
       </div>
       <nav class="sidebar-nav">
-        <router-link to="/admin/dashboard" class="nav-item">🏠 控制台</router-link>
-        <router-link to="/admin/students" class="nav-item">👥 学生管理</router-link>
-        <router-link to="/admin/albums" class="nav-item">📷 相册管理</router-link>
-        <router-link to="/admin/settings" class="nav-item">⚙️ 站点设置</router-link>
+        <router-link to="/dashboard" class="nav-item">🏠 控制台</router-link>
+        <router-link to="/students" class="nav-item">👥 学生管理</router-link>
+        <router-link to="/albums" class="nav-item">📷 相册管理</router-link>
+        <router-link to="/settings" class="nav-item">⚙️ 站点设置</router-link>
       </nav>
       <div class="sidebar-footer">
         <button class="logout-btn" @click="handleLogout">退出登录</button>

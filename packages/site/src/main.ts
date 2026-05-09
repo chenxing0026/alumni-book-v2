@@ -5,7 +5,7 @@ import '@alumni/shared/src/tokens.css'
 import './styles/global.css'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/alumni-book-v2/'),
   routes: [
     {
       path: '/',

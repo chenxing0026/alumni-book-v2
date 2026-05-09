@@ -45,7 +45,7 @@ async function handleLogin() {
   error.value = ''
   try {
     await adminLogin(password.value)
-    router.push('/admin/dashboard')
+    router.push('/dashboard')
   } catch (e: any) {
     error.value = e.message || '登录失败'
   } finally {
