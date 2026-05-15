@@ -1,0 +1,20 @@
+{
+  "name": "site-astro",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "npm run build:data && astro build",
+    "build:data": "tsx scripts/fetch-data.ts",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/vue": "^5.0.0",
+    "astro": "^5.0.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

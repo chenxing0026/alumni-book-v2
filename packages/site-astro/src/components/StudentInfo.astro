@@ -1,0 +1,34 @@
+---
+const { title, fields, isMemory } = Astro.props as {
+  title: string
+  fields: { key: string; label: string; value: string }[]
+  isMemory?: boolean
+}
+---
+
+<section class="profile-section">
+  <h2 class="section-title display-sm">{title}</h2>
+  <div class={isMemory ? 'memory-list' : 'info-grid'}>
+    {fields.map(f => (
+      <div class="info-item">
+        <span class="info-label">{f.label}</span>
+        <span class="info-value">{f.value}</span>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .profile-section { margin-bottom: var(--spacing-section); }
+  .section-title {
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-hairline);
+  }
+  .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md); }
+  .memory-list { display: flex; flex-direction: column; gap: var(--spacing-md); }
+  .info-item { padding: var(--spacing-sm) 0; }
+  .info-label { display: block; font-size: var(--type-body-sm-size); font-weight: 500; color: var(--color-muted); margin-bottom: var(--spacing-xxs); }
+  .info-value { font-size: var(--type-body-md-size); color: var(--color-ink); }
+  @media (max-width: 768px) { .info-grid { grid-template-columns: 1fr; } }
+</style>

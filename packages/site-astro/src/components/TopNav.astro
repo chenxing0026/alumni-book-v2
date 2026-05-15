@@ -1,0 +1,85 @@
+<nav class="top-nav">
+  <div class="nav-inner container">
+    <a href="/alumni-book-v2/" class="nav-brand">
+      <span class="brand-mark">✦</span>
+      <span class="brand-text">同学录</span>
+    </a>
+    <input type="checkbox" id="menu-toggle" class="menu-toggle-input" />
+    <label for="menu-toggle" class="mobile-toggle" aria-label="菜单">
+      <span class="toggle-bar"></span>
+    </label>
+    <div class="nav-links">
+      <a href="/alumni-book-v2/preface" class="nav-link">前言</a>
+      <a href="/alumni-book-v2/roster" class="nav-link">同学录</a>
+      <a href="/alumni-book-v2/album" class="nav-link">相册</a>
+      <a href="/alumni-book-v2/timeline" class="nav-link">时光轴</a>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    height: var(--nav-height);
+    background-color: var(--color-canvas);
+    border-bottom: 1px solid var(--color-hairline);
+  }
+  .nav-inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xl);
+  }
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+  .brand-mark { font-size: 18px; color: var(--color-primary); }
+  .brand-text { font-family: var(--font-display); font-size: 20px; font-weight: 500; letter-spacing: -0.3px; }
+  .nav-links { display: flex; align-items: center; gap: var(--spacing-sm); margin-left: auto; }
+  .nav-link {
+    padding: 8px 14px;
+    font-size: var(--type-nav-link-size);
+    font-weight: var(--type-nav-link-weight);
+    color: var(--color-muted);
+    border-radius: var(--rounded-md);
+    text-decoration: none;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+  .nav-link:hover { color: var(--color-ink); background-color: var(--color-surface-card); }
+  .menu-toggle-input { display: none; }
+  .mobile-toggle { display: none; width: 36px; height: 36px; align-items: center; justify-content: center; margin-left: auto; cursor: pointer; }
+  .toggle-bar, .toggle-bar::before, .toggle-bar::after {
+    display: block; width: 20px; height: 2px;
+    background-color: var(--color-ink); border-radius: 1px;
+    transition: transform 0.2s ease;
+  }
+  .toggle-bar { position: relative; }
+  .toggle-bar::before, .toggle-bar::after { content: ''; position: absolute; left: 0; }
+  .toggle-bar::before { top: -6px; }
+  .toggle-bar::after { top: 6px; }
+  @media (max-width: 768px) {
+    .mobile-toggle { display: flex; }
+    .nav-links {
+      position: fixed;
+      top: var(--nav-height);
+      left: 0; right: 0; bottom: 0;
+      flex-direction: column;
+      background-color: var(--color-canvas);
+      padding: var(--spacing-xl);
+      gap: var(--spacing-xs);
+      opacity: 0; visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    .menu-toggle-input:checked ~ .nav-links {
+      opacity: 1; visibility: visible; pointer-events: auto;
+    }
+    .nav-link { font-size: 18px; padding: 14px 16px; }
+  }
+</style>

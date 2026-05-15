@@ -21,6 +21,8 @@ const router = createRouter({
         { path: 'students', name: 'students', component: () => import('./views/StudentsView.vue') },
         { path: 'students/:id', name: 'student-edit', component: () => import('./views/StudentEditView.vue') },
         { path: 'albums', name: 'albums', component: () => import('./views/AlbumsView.vue') },
+        { path: 'messages', name: 'messages', component: () => import('./views/MessagesView.vue') },
+        { path: 'timeline', name: 'timeline', component: () => import('./views/TimelineEventsView.vue') },
         { path: 'settings', name: 'settings', component: () => import('./views/SettingsView.vue') },
       ],
     },

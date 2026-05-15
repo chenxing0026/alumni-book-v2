@@ -1,0 +1,70 @@
+---
+interface Props {
+  student: {
+    name: string
+    avatarUrl: string | null
+    isOwner: boolean
+    info?: { nickname?: string; motto?: string }
+  }
+  bgStyle: string
+}
+
+const { student, bgStyle } = Astro.props as Props
+---
+
+<section class="student-hero">
+  <div class="hero-bg" style={bgStyle}></div>
+  <div class="hero-content container">
+    <div class="hero-avatar">
+      {student.avatarUrl ? (
+        <img src={student.avatarUrl} alt={student.name} loading="lazy" decoding="async" style="aspect-ratio: 1" />
+      ) : (
+        <span class="avatar-char">{student.name.charAt(0)}</span>
+      )}
+    </div>
+    <h1 class="hero-name display-md">{student.name}</h1>
+    {student.info?.nickname && <p class="hero-nickname">「 {student.info.nickname} 」</p>}
+    {student.info?.motto && <p class="hero-motto">「 {student.info.motto} 」</p>}
+    {student.isOwner && <span class="owner-badge">专属页面</span>}
+  </div>
+</section>
+
+<style>
+  .student-hero {
+    position: relative;
+    padding: var(--spacing-xxl) 0;
+    text-align: center;
+    background-color: var(--color-surface-soft);
+    overflow: hidden;
+  }
+  .hero-bg { position: absolute; inset: 0; z-index: 0; opacity: 0.15; }
+  .hero-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); }
+  .hero-avatar {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--color-surface-card), var(--color-hairline));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--color-hairline);
+    margin-bottom: var(--spacing-sm);
+  }
+  .hero-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar-char { font-family: var(--font-display); font-size: 40px; font-weight: 500; color: var(--color-muted); }
+  .hero-nickname { font-size: var(--type-body-md-size); color: var(--color-muted); font-style: italic; }
+  .hero-motto { font-size: var(--type-body-md-size); color: var(--color-muted); font-style: italic; }
+  .owner-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    padding: 4px 14px;
+    background: linear-gradient(135deg, rgba(201,168,76,0.25), rgba(122,74,30,0.18));
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: var(--rounded-pill);
+    font-size: var(--type-caption-size);
+    color: var(--color-primary);
+    margin-top: var(--spacing-xs);
+  }
+  .owner-badge::before { content: '★'; }
+</style>

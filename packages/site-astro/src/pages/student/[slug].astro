@@ -1,0 +1,160 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro'
+import StudentHero from '../../components/StudentHero.astro'
+import StudentInfo from '../../components/StudentInfo.astro'
+
+export async function getStaticPaths() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://alumni-book-api.chenyuhao2263.workers.dev'
+  let students: any[] = []
+  try {
+    const res = await fetch(`${API_BASE}/api/students`)
+    const data = await res.json() as any
+    students = data.data || []
+  } catch {}
+  return students.map(s => ({ params: { slug: s.slug } }))
+}
+
+const { slug } = Astro.params
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://alumni-book-api.chenyuhao2263.workers.dev'
+
+let student: any = null
+try {
+  const res = await fetch(`${API_BASE}/api/students/${slug}`)
+  const data = await res.json() as any
+  if (data.success && data.data) student = data.data
+} catch {}
+
+if (!student) {
+  return Astro.redirect('/alumni-book-v2/roster')
+}
+
+const bgStyle = student.backgroundUrl
+  ? `background-image: url(${student.backgroundUrl}); background-size: cover; background-position: center;`
+  : student.backgroundColor
+  ? `background-color: ${student.backgroundColor};`
+  : ''
+
+function getFields(info: Record<string, string>, keys: [string, string][]) {
+  return keys.filter(([k]) => info[k]?.trim()).map(([k, label]) => ({ key: k, label, value: info[k] }))
+}
+
+const basicFields = getFields(student.info, [
+  ['name','姓名'],['nickname','昵称'],['gender','性别'],
+  ['birthday','出生日期'],['school','学校'],['class','班级'],
+  ['graduationYear','毕业年份'],
+])
+const contactFields = getFields(student.info, [
+  ['qq','QQ'],['wechat','微信'],['weibo','微博'],
+  ['phone','手机'],['email','邮箱'],['address','常住地'],
+])
+const personalityFields = getFields(student.info, [
+  ['mbti','MBTI'],['bloodType','血型'],['astro','星座'],
+  ['strengths','擅长的事'],['weaknesses','不擅长的事'],
+  ['bestSubject','最喜欢科目'],['worstSubject','最讨厌科目'],
+])
+const interestFields = getFields(student.info, [
+  ['favoriteIdol','喜欢明星'],['favoriteAnime','喜欢动漫'],
+  ['favoriteMovie','喜欢电影'],['favoriteSong','喜欢歌曲'],
+  ['favoriteGame','喜欢游戏'],['favoriteFood','喜欢食物'],
+  ['favoriteColor','喜欢颜色'],['favoriteSport','喜欢运动'],
+])
+const memoryFields = getFields(student.info, [
+  ['bestMemory','最难忘的一件事'],['bestLesson','最难忘的一节课'],
+  ['deskmateFun','同桌趣事'],['classMeme','班级经典梗'],
+  ['embarrassingMoment','最社死瞬间'],['proudestAchievement','学生时代最骄傲的事'],
+])
+const futureFields = getFields(student.info, [
+  ['targetUniversity','目标大学'],['targetMajor','目标专业'],
+  ['futureCareer','未来职业'],['futureCity','未来城市'],
+  ['futureSelf','十年后的自己'],['letterToFuture','给未来自己的话'],
+])
+---
+
+<MainLayout>
+  {student.isOwner && student.customHtml ? (
+    <div class="owner-page">
+      <iframe srcdoc={student.customHtml
+        .replace(/\{\{\s*student\.name\s*\}\}/g, student.name)
+        .replace(/\{\{\s*student\.avatarUrl\s*\}\}/g, student.avatarUrl || '')
+        .replace(/\{\{\s*student\.musicUrl\s*\}\}/g, student.musicUrl || '')
+        .replace(/\{\{\s*student\.backgroundUrl\s*\}\}/g, student.backgroundUrl || '')
+        .replace(/\{\{\s*student\.info\.nickname\s*\}\}/g, student.info?.nickname || '')
+        .replace(/\{\{\s*student\.info\.motto\s*\}\}/g, student.info?.motto || '')
+      } class="owner-iframe" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe>
+    </div>
+  ) : (
+    <div class="student-page">
+      <StudentHero student={student} bgStyle={bgStyle} />
+      <div class="student-body container">
+        {basicFields.length > 0 && <StudentInfo title="基础信息" fields={basicFields} />}
+        {contactFields.length > 0 && <StudentInfo title="联系方式" fields={contactFields} />}
+        {personalityFields.length > 0 && <StudentInfo title="个性标签" fields={personalityFields} />}
+        {interestFields.length > 0 && <StudentInfo title="兴趣爱好" fields={interestFields} />}
+        {memoryFields.length > 0 && <StudentInfo title="校园回忆" fields={memoryFields} isMemory />}
+        {futureFields.length > 0 && <StudentInfo title="未来规划" fields={futureFields} />}
+
+        {student.photos?.length > 0 && (
+          <section class="profile-section">
+            <h2 class="section-title display-sm">照片墙</h2>
+            <div id={`photo-wall-${student.slug}`}></div>
+          </section>
+        )}
+
+        <div id={`message-wall-${student.slug}`}></div>
+
+        <div class="seal-area"><span class="seal">留念</span></div>
+      </div>
+    </div>
+  )}
+
+  {student.musicUrl && student.musicAutoplay && (
+    <audio src={student.musicUrl} loop preload="auto" autoplay></audio>
+  )}
+</MainLayout>
+
+<script>
+  import { createApp } from 'vue'
+  import PhotoWall from '../../components/PhotoWall.vue'
+  import MessageWall from '../../components/MessageWall.vue'
+
+  const slug = Astro.params.slug
+
+  const photoEl = document.getElementById(`photo-wall-${slug}`)
+  if (photoEl) {
+    const dataEl = document.getElementById(`photo-data-${slug}`)
+    const photos = JSON.parse(dataEl?.textContent || '[]')
+    createApp(PhotoWall, { photos }).mount(photoEl)
+  }
+
+  const msgEl = document.getElementById(`message-wall-${slug}`)
+  if (msgEl) {
+    createApp(MessageWall, { studentSlug: slug }).mount(msgEl)
+  }
+</script>
+
+<script id={`photo-data-${slug}`} type="application/json" set:html={JSON.stringify(student?.photos || [])}></script>
+
+<style>
+  .owner-page { min-height: 100vh; padding-top: var(--nav-height); }
+  .owner-iframe { width: 100%; min-height: calc(100vh - var(--nav-height)); border: none; }
+  .student-page { padding-top: var(--nav-height); }
+  .student-body { max-width: 800px; padding: var(--spacing-section) var(--spacing-lg); }
+  .profile-section { margin-bottom: var(--spacing-section); }
+  .section-title {
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-hairline);
+  }
+  .seal-area { text-align: right; padding: var(--spacing-lg) 0; opacity: 0.5; }
+  .seal {
+    font-family: var(--font-display);
+    font-size: 24px;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--rounded-sm);
+    padding: 4px 12px;
+    transform: rotate(-5deg);
+    display: inline-block;
+  }
+</style>

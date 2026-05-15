@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 import { cors } from 'hono/cors'
 import { jwt } from 'hono/jwt'
 import { studentsRoutes } from './routes/students'
@@ -6,6 +7,8 @@ import { configRoutes } from './routes/config'
 import { albumsRoutes } from './routes/albums'
 import { uploadRoutes } from './routes/upload'
 import { authRoutes } from './routes/auth'
+import { messagesRoutes } from './routes/messages'
+import { timelineRoutes } from './routes/timeline'
 
 type Bindings = {
   DB: D1Database
@@ -167,35 +170,65 @@ app.get('/api/files/:key+', async (c) => {
 
 // 需要认证的路由
 app.use('/api/admin/*', async (c, next) => {
-  return createJwtMiddleware(c.env.JWT_SECRET)(c, next)
+  return jwtGuard(c.env.JWT_SECRET)(c, next)
 })
+
+// JWT 中间件包装器
+function jwtGuard(secret: string) {
+  const mw = createJwtMiddleware(secret)
+  return async (c: any, next: any) => {
+    try {
+      await mw(c, next)
+    } catch (e) {
+      if (e instanceof HTTPException) return e.getResponse()
+      throw e
+    }
+  }
+}
 
 app.use('/api/students', async (c, next) => {
   if (c.req.method === 'GET') return next()
-  return createJwtMiddleware(c.env.JWT_SECRET)(c, next)
+  return jwtGuard(c.env.JWT_SECRET)(c, next)
 })
 
 app.use('/api/students/:slug', async (c, next) => {
   if (c.req.method === 'GET') return next()
-  return createJwtMiddleware(c.env.JWT_SECRET)(c, next)
+  return jwtGuard(c.env.JWT_SECRET)(c, next)
 })
 
 app.use('/api/config', async (c, next) => {
   if (c.req.method === 'GET') return next()
-  return createJwtMiddleware(c.env.JWT_SECRET)(c, next)
+  return jwtGuard(c.env.JWT_SECRET)(c, next)
 })
 
 app.use('/api/albums', async (c, next) => {
   if (c.req.method === 'GET') return next()
-  return createJwtMiddleware(c.env.JWT_SECRET)(c, next)
+  return jwtGuard(c.env.JWT_SECRET)(c, next)
 })
 
 app.use('/api/albums/:id', async (c, next) => {
-  return createJwtMiddleware(c.env.JWT_SECRET)(c, next)
+  return jwtGuard(c.env.JWT_SECRET)(c, next)
 })
 
 app.use('/api/upload', async (c, next) => {
-  return createJwtMiddleware(c.env.JWT_SECRET)(c, next)
+  return jwtGuard(c.env.JWT_SECRET)(c, next)
+})
+
+app.use('/api/admin/messages', async (c, next) => {
+  return jwtGuard(c.env.JWT_SECRET)(c, next)
+})
+
+app.use('/api/admin/messages/:id', async (c, next) => {
+  return jwtGuard(c.env.JWT_SECRET)(c, next)
+})
+
+app.use('/api/timeline/events', async (c, next) => {
+  if (c.req.method === 'GET') return next()
+  return jwtGuard(c.env.JWT_SECRET)(c, next)
+})
+
+app.use('/api/timeline/events/:id', async (c, next) => {
+  return jwtGuard(c.env.JWT_SECRET)(c, next)
 })
 
 // 注册路由
@@ -203,6 +236,8 @@ app.route('/api', studentsRoutes)
 app.route('/api', configRoutes)
 app.route('/api', albumsRoutes)
 app.route('/api', uploadRoutes)
+app.route('/api', messagesRoutes)
+app.route('/api', timelineRoutes)
 
 // 管理后台统计
 app.get('/api/admin/stats', async (c) => {
@@ -223,6 +258,9 @@ app.get('/api/admin/stats', async (c) => {
 
 // 错误处理
 app.onError((err, c) => {
+  if (err instanceof HTTPException) {
+    return err.getResponse()
+  }
   console.error('Worker error:', err)
   return c.json({ success: false, message: '服务器内部错误' }, 500)
 })
@@ -232,6 +270,7 @@ app.notFound((c) => {
 })
 
 function formatStudent(row: any) {
+  const info = JSON.parse(row.info || '{}')
   return {
     id: row.id,
     name: row.name,
@@ -244,7 +283,13 @@ function formatStudent(row: any) {
     backgroundUrl: row.background_url,
     backgroundColor: row.background_color,
     customHtml: row.custom_html,
-    info: JSON.parse(row.info || '{}'),
+    info: {
+      ...info,
+      mbti: row.mbti || info.mbti || '',
+      graduationYear: row.graduation_year || info.graduationYear || '',
+      school: row.school || info.school || '',
+      class: row.class_name || info.class || '',
+    },
     photos: JSON.parse(row.photos || '[]'),
     createdAt: row.created_at,
     updatedAt: row.updated_at,

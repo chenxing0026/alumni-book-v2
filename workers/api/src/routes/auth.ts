@@ -110,12 +110,23 @@ authRoutes.get('/verify', async (c) => {
 
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder()
-  const data = encoder.encode(password)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-  return btoa(String.fromCharCode(...new Uint8Array(hashBuffer)))
+  const salt = crypto.getRandomValues(new Uint8Array(16))
+  const key = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits'])
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 100_000 }, key, 256)
+  const hash = btoa(String.fromCharCode(...new Uint8Array(bits)))
+  const saltStr = btoa(String.fromCharCode(...salt))
+  return `pbkdf2:${saltStr}:${hash}`
 }
 
-async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const computedHash = await hashPassword(password)
-  return computedHash === hash
+async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
+  if (storedHash.startsWith('pbkdf2:')) {
+    const [, saltStr, hash] = storedHash.split(':')
+    const encoder = new TextEncoder()
+    const salt = Uint8Array.from(atob(saltStr), c => c.charCodeAt(0))
+    const key = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits'])
+    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 100_000 }, key, 256)
+    const computedHash = btoa(String.fromCharCode(...new Uint8Array(bits)))
+    return computedHash === hash
+  }
+  return false
 }

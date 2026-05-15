@@ -1,0 +1,106 @@
+---
+import MainLayout from '../layouts/MainLayout.astro'
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://alumni-book-api.chenyuhao2263.workers.dev'
+let items: any[] = []
+try {
+  const res = await fetch(`${API_BASE}/api/timeline`)
+  const data = await res.json() as any
+  items = data.data || []
+} catch {}
+---
+
+<MainLayout>
+  <div class="timeline-page section">
+    <div class="container">
+      <div class="timeline-header">
+        <p class="timeline-label">· TIMELINE ·</p>
+        <h1 class="timeline-title display-lg">时光轴</h1>
+        <p class="timeline-subtitle">沿着时间的轨迹，翻阅我们的故事</p>
+      </div>
+
+      <div class="timeline-line">
+        {items.map((item) => (
+          <div class={`timeline-node ${item.isMilestone ? 'milestone' : ''} type-${item.type}`}>
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-date">{new Date(item.date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+              <h3 class="tl-title">{item.title}</h3>
+              {item.description && <p class="tl-desc">{item.description}</p>}
+              {item.photoUrl && (
+                <img src={item.photoUrl.startsWith('http') ? item.photoUrl : `${API_BASE}${item.photoUrl}`} alt="" loading="lazy" decoding="async" style="aspect-ratio: 4/3" class="tl-photo" />
+              )}
+              {item.type === 'join' && item.slug && (
+                <a href={`/alumni-book-v2/student/${item.slug}`} class="tl-link">查看 TA 的主页 →</a>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {items.length === 0 && (
+        <div class="empty-state">
+          <p>时光轴尚未写入内容</p>
+        </div>
+      )}
+    </div>
+  </div>
+</MainLayout>
+
+<style>
+  .timeline-page { padding-top: calc(var(--nav-height) + var(--spacing-section)); }
+  .timeline-header { text-align: center; margin-bottom: var(--spacing-xxl); }
+  .timeline-label {
+    font-size: var(--type-caption-uppercase-size);
+    font-weight: var(--type-caption-uppercase-weight);
+    letter-spacing: var(--type-caption-uppercase-letter-spacing);
+    color: var(--color-muted);
+    margin-bottom: var(--spacing-md);
+  }
+  .timeline-subtitle { font-size: var(--type-body-sm-size); color: var(--color-muted); margin-top: var(--spacing-sm); }
+  .timeline-line { position: relative; max-width: 720px; margin: 0 auto; }
+  .timeline-line::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: var(--color-hairline);
+    transform: translateX(-50%);
+  }
+  .timeline-node { position: relative; display: flex; margin-bottom: var(--spacing-xl); }
+  .timeline-node:nth-child(odd) { padding-right: 50%; }
+  .timeline-node:nth-child(even) { padding-left: 50%; justify-content: flex-end; }
+  .tl-dot {
+    position: absolute;
+    left: 50%;
+    top: 20px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+  .milestone .tl-dot { width: 20px; height: 20px; background: var(--color-accent-amber); box-shadow: 0 0 0 4px rgba(232, 165, 90, 0.2); }
+  .tl-card {
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--rounded-md);
+    padding: var(--spacing-lg);
+    max-width: 340px;
+  }
+  .tl-date { font-size: var(--type-caption-size); color: var(--color-muted); margin-bottom: var(--spacing-xs); }
+  .tl-title { font-size: var(--type-title-sm-size); margin-bottom: var(--spacing-xs); }
+  .tl-desc { font-size: var(--type-body-sm-size); color: var(--color-body); line-height: 1.6; }
+  .tl-photo { width: 100%; border-radius: var(--rounded-sm); margin-top: var(--spacing-sm); }
+  .tl-link { display: inline-block; margin-top: var(--spacing-sm); font-size: var(--type-body-sm-size); color: var(--color-primary); text-decoration: none; }
+  .tl-link:hover { text-decoration: underline; }
+  .empty-state { text-align: center; padding: var(--spacing-xxl); color: var(--color-muted); }
+
+  @media (max-width: 768px) {
+    .timeline-line::before { left: 20px; }
+    .timeline-node:nth-child(odd), .timeline-node:nth-child(even) { padding: 0 0 0 48px; }
+    .tl-dot { left: 20px; }
+    .tl-card { max-width: 100%; }
+  }
+</style>

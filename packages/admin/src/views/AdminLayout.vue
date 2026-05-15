@@ -9,6 +9,8 @@
         <router-link to="/dashboard" class="nav-item">🏠 控制台</router-link>
         <router-link to="/students" class="nav-item">👥 学生管理</router-link>
         <router-link to="/albums" class="nav-item">📷 相册管理</router-link>
+        <router-link to="/messages" class="nav-item">💬 留言审核</router-link>
+        <router-link to="/timeline" class="nav-item">⏳ 时光轴</router-link>
         <router-link to="/settings" class="nav-item">⚙️ 站点设置</router-link>
       </nav>
       <div class="sidebar-footer">

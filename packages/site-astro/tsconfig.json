@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@alumni/shared": ["../shared/src/index.ts"],
+      "@alumni/shared/*": ["../shared/src/*"]
+    }
+  }
+}

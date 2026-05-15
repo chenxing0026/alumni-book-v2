@@ -4,8 +4,7 @@ compatibility_date = "2024-10-22"
 workers_dev = true
 
 [vars]
-JWT_SECRET = "alumni-book-jwt-secret-change-me-2026"
-CORS_ORIGIN = "https://chenxing0026.github.io"
+CORS_ORIGIN = "https://flashnovayu.github.io"
 
 [[d1_databases]]
 binding = "DB"

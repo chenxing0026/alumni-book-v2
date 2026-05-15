@@ -56,6 +56,10 @@ studentsRoutes.put('/students/:slug', async (c) => {
   if (body.backgroundUrl !== undefined) { fields.push('background_url = ?'); values.push(body.backgroundUrl) }
   if (body.backgroundColor !== undefined) { fields.push('background_color = ?'); values.push(body.backgroundColor) }
   if (body.customHtml !== undefined) { fields.push('custom_html = ?'); values.push(body.customHtml) }
+  if (body.info?.mbti !== undefined) { fields.push('mbti = ?'); values.push(body.info.mbti) }
+  if (body.info?.graduationYear !== undefined) { fields.push('graduation_year = ?'); values.push(body.info.graduationYear) }
+  if (body.info?.school !== undefined) { fields.push('school = ?'); values.push(body.info.school) }
+  if (body.info?.class !== undefined) { fields.push('class_name = ?'); values.push(body.info.class) }
   if (body.info !== undefined) { fields.push('info = ?'); values.push(JSON.stringify(body.info)) }
   if (body.photos !== undefined) { fields.push('photos = ?'); values.push(JSON.stringify(body.photos)) }
 
