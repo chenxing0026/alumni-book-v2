@@ -243,6 +243,7 @@ function formatStudent(row: any) {
     musicAutoplay: !!row.music_autoplay,
     backgroundUrl: row.background_url,
     backgroundColor: row.background_color,
+    customHtml: row.custom_html,
     info: JSON.parse(row.info || '{}'),
     photos: JSON.parse(row.photos || '[]'),
     createdAt: row.created_at,

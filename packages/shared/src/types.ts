@@ -10,6 +10,7 @@ export interface Student {
   musicAutoplay: boolean
   backgroundUrl: string | null
   backgroundColor: string | null
+  customHtml: string | null
   info: StudentInfo
   photos: string[]
   createdAt: string

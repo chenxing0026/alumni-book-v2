@@ -1,5 +1,17 @@
 <template>
-  <div class="student-page">
+  <!-- 专属模板：渲染自定义 HTML -->
+  <div v-if="student.isOwner && student.customHtml" class="owner-page">
+    <iframe
+      ref="iframeRef"
+      :srcdoc="processedHtml"
+      class="owner-iframe"
+      frameborder="0"
+      sandbox="allow-scripts allow-same-origin"
+    ></iframe>
+  </div>
+
+  <!-- 普通模板 -->
+  <div v-else class="student-page">
     <!-- Hero 区域 -->
     <section class="student-hero">
       <div class="hero-bg" :style="bgStyle"></div>
@@ -11,6 +23,7 @@
         <h1 class="hero-name display-md">{{ student.name }}</h1>
         <p v-if="student.info.nickname" class="hero-nickname">「 {{ student.info.nickname }} 」</p>
         <p v-if="student.info.motto" class="hero-motto">「 {{ student.info.motto }} 」</p>
+        <span v-if="student.isOwner" class="owner-badge">专属页面</span>
       </div>
     </section>
 
@@ -122,6 +135,7 @@ import { getStudent } from '@/api/client'
 
 const route = useRoute()
 const router = useRouter()
+const iframeRef = ref<HTMLIFrameElement>()
 const student = ref<Student>({
   id: '',
   name: '',
@@ -133,10 +147,25 @@ const student = ref<Student>({
   musicAutoplay: false,
   backgroundUrl: null,
   backgroundColor: null,
+  customHtml: null,
   info: {} as StudentInfo,
   photos: [] as string[],
   createdAt: '',
   updatedAt: '',
+})
+
+// 处理专属模板 HTML，替换变量
+const processedHtml = computed(() => {
+  if (!student.value.customHtml) return ''
+  let html = student.value.customHtml
+  // 替换模板变量
+  html = html.replace(/\{\{\s*student\.name\s*\}\}/g, student.value.name)
+  html = html.replace(/\{\{\s*student\.avatarUrl\s*\}\}/g, student.value.avatarUrl || '')
+  html = html.replace(/\{\{\s*student\.musicUrl\s*\}\}/g, student.value.musicUrl || '')
+  html = html.replace(/\{\{\s*student\.backgroundUrl\s*\}\}/g, student.value.backgroundUrl || '')
+  html = html.replace(/\{\{\s*student\.info\.nickname\s*\}\}/g, student.value.info?.nickname || '')
+  html = html.replace(/\{\{\s*student\.info\.motto\s*\}\}/g, student.value.info?.motto || '')
+  return html
 })
 
 const bgStyle = computed(() => {
@@ -236,6 +265,19 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* 专属模板容器 */
+.owner-page {
+  min-height: 100vh;
+  padding-top: var(--nav-height);
+}
+
+.owner-iframe {
+  width: 100%;
+  min-height: calc(100vh - var(--nav-height));
+  border: none;
+}
+
+/* 普通模板 */
 .student-page {
   padding-top: var(--nav-height);
 }
@@ -300,6 +342,23 @@ onMounted(async () => {
   font-size: var(--type-body-md-size);
   color: var(--color-muted);
   font-style: italic;
+}
+
+.owner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  padding: 4px 14px;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.25), rgba(122, 74, 30, 0.18));
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  border-radius: var(--rounded-pill);
+  font-size: var(--type-caption-size);
+  color: var(--color-primary);
+  margin-top: var(--spacing-xs);
+}
+
+.owner-badge::before {
+  content: '★';
 }
 
 .student-body {

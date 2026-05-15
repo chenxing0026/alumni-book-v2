@@ -48,12 +48,14 @@ studentsRoutes.put('/students/:slug', async (c) => {
   const values: any[] = []
 
   if (body.name !== undefined) { fields.push('name = ?'); values.push(body.name) }
+  if (body.isOwner !== undefined) { fields.push('is_owner = ?'); values.push(body.isOwner ? 1 : 0) }
   if (body.avatarUrl !== undefined) { fields.push('avatar_url = ?'); values.push(body.avatarUrl) }
   if (body.musicUrl !== undefined) { fields.push('music_url = ?'); values.push(body.musicUrl) }
   if (body.musicTitle !== undefined) { fields.push('music_title = ?'); values.push(body.musicTitle) }
   if (body.musicAutoplay !== undefined) { fields.push('music_autoplay = ?'); values.push(body.musicAutoplay ? 1 : 0) }
   if (body.backgroundUrl !== undefined) { fields.push('background_url = ?'); values.push(body.backgroundUrl) }
   if (body.backgroundColor !== undefined) { fields.push('background_color = ?'); values.push(body.backgroundColor) }
+  if (body.customHtml !== undefined) { fields.push('custom_html = ?'); values.push(body.customHtml) }
   if (body.info !== undefined) { fields.push('info = ?'); values.push(JSON.stringify(body.info)) }
   if (body.photos !== undefined) { fields.push('photos = ?'); values.push(JSON.stringify(body.photos)) }
 

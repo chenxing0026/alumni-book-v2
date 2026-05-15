@@ -27,6 +27,34 @@
           <input type="file" accept="image/*" @change="handleAvatarUpload" />
           <img v-if="student.avatarUrl" :src="student.avatarUrl" class="avatar-preview" />
         </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" v-model="student.isOwner" />
+            设为专属模板 (Owner)
+          </label>
+          <p class="form-hint">开启后可为此学生编写自定义 HTML 页面</p>
+        </div>
+      </div>
+
+      <!-- 背景设置 -->
+      <div class="card">
+        <h2 class="title-md section-heading">背景设置</h2>
+        <div class="form-group">
+          <label class="form-label">背景图片</label>
+          <input type="file" accept="image/*" @change="handleBackgroundUpload" />
+          <div v-if="student.backgroundUrl" class="background-preview">
+            <img :src="student.backgroundUrl" alt="背景预览" />
+            <button class="btn-danger btn-sm" @click="student.backgroundUrl = null">移除</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">背景颜色</label>
+          <div class="color-row">
+            <input v-model="student.backgroundColor" type="color" class="color-input" />
+            <input v-model="student.backgroundColor" type="text" class="text-input" placeholder="#faf9f5" />
+            <button class="btn-secondary btn-sm" @click="student.backgroundColor = null">清除</button>
+          </div>
+        </div>
       </div>
 
       <!-- 个人资料 -->
@@ -101,6 +129,7 @@
         <div class="form-group">
           <label class="form-label">音乐文件</label>
           <input type="file" accept="audio/*" @change="handleMusicUpload" />
+          <audio v-if="student.musicUrl" :src="student.musicUrl" controls class="audio-preview" />
         </div>
         <div class="form-group">
           <label class="form-label">音乐标题</label>
@@ -111,6 +140,26 @@
             <input type="checkbox" v-model="student.musicAutoplay" />
             自动播放
           </label>
+        </div>
+      </div>
+
+      <!-- 专属模板 -->
+      <div v-if="student.isOwner" class="card">
+        <h2 class="title-md section-heading">专属模板 HTML</h2>
+        <p class="form-hint">编写自定义 HTML 代码，将覆盖默认的学生个人页模板。支持完整的 HTML/CSS/JS。</p>
+        <div class="form-group">
+          <textarea
+            v-model="student.customHtml"
+            class="html-editor"
+            placeholder="<!DOCTYPE html>&#10;<html>&#10;  <body>&#10;    <h1>自定义页面</h1>&#10;  </body>&#10;</html>"
+            rows="20"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <p class="form-hint">
+            提示：可使用 <code>{{ student.name }}</code>、<code>{{ student.avatarUrl }}</code> 等变量。
+            资源引用使用 R2 公开 URL。
+          </p>
         </div>
       </div>
     </div>
@@ -141,6 +190,7 @@ const student = ref<Student>({
   musicAutoplay: false,
   backgroundUrl: null,
   backgroundColor: null,
+  customHtml: null,
   info: {} as StudentInfo,
   photos: [],
   createdAt: '',
@@ -167,6 +217,26 @@ async function handleAvatarUpload(e: Event) {
     })
     if (res.data?.url) student.value.avatarUrl = res.data.url
     showToast('success', '头像上传成功')
+  } catch (e: any) {
+    showToast('error', e.message || '上传失败')
+  }
+}
+
+async function handleBackgroundUpload(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('type', 'background')
+  formData.append('slug', student.value.slug)
+  try {
+    const res = await adminFetch<ApiResponse<{ url: string }>>('/api/upload', {
+      method: 'POST',
+      body: formData,
+      headers: {},
+    })
+    if (res.data?.url) student.value.backgroundUrl = res.data.url
+    showToast('success', '背景图片上传成功')
   } catch (e: any) {
     showToast('error', e.message || '上传失败')
   }
@@ -213,7 +283,7 @@ onMounted(async () => {
     const res = await adminFetch<ApiResponse<Student>>(`/api/students/${id}`)
     if (res.data) student.value = res.data
   } catch {
-    router.replace('/admin/students')
+    router.replace('/students')
   }
 })
 </script>
@@ -242,6 +312,12 @@ onMounted(async () => {
   gap: var(--spacing-md);
 }
 
+.form-hint {
+  font-size: var(--type-body-sm-size);
+  color: var(--color-muted);
+  margin-top: var(--spacing-xxs);
+}
+
 .avatar-preview {
   width: 80px;
   height: 80px;
@@ -249,5 +325,61 @@ onMounted(async () => {
   object-fit: cover;
   margin-top: var(--spacing-sm);
   border: 2px solid var(--color-hairline);
+}
+
+.background-preview {
+  margin-top: var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.background-preview img {
+  max-width: 300px;
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: var(--rounded-md);
+  border: 1px solid var(--color-hairline);
+}
+
+.color-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.color-input {
+  width: 50px;
+  height: 40px;
+  padding: 2px;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-md);
+  cursor: pointer;
+}
+
+.audio-preview {
+  width: 100%;
+  margin-top: var(--spacing-sm);
+}
+
+.html-editor {
+  width: 100%;
+  min-height: 400px;
+  padding: var(--spacing-md);
+  font-family: var(--font-code);
+  font-size: 14px;
+  line-height: 1.6;
+  background-color: var(--color-surface-dark);
+  color: var(--color-on-dark);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-md);
+  resize: vertical;
+  tab-size: 2;
+}
+
+.btn-sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
 }
 </style>
