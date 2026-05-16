@@ -45,24 +45,30 @@ authRoutes.post('/login', async (c) => {
   const config = await db.prepare("SELECT value FROM site_config WHERE key = 'admin_password'").first()
 
   let valid = false
+  let needsUpgrade = false
   if (config) {
     // 使用存储的哈希验证
     const storedHash = (config as any).value
     valid = await verifyPassword(password, storedHash)
+    // 旧格式哈希验证成功后自动升级为 PBKDF2
+    if (valid && !storedHash.startsWith('pbkdf2:')) {
+      needsUpgrade = true
+    }
   } else {
     // 默认密码 (首次使用，应该修改)
     valid = password === 'admin888'
-    if (valid) {
-      // 存储密码哈希
-      const hash = await hashPassword(password)
-      await db.prepare(
-        "INSERT OR REPLACE INTO site_config (key, value) VALUES ('admin_password', ?)"
-      ).bind(hash).run()
-    }
   }
 
   if (!valid) {
     return c.json({ success: false, message: '密码错误' }, 401)
+  }
+
+  // 存储或升级密码哈希
+  if (!config || needsUpgrade) {
+    const hash = await hashPassword(password)
+    await db.prepare(
+      "INSERT OR REPLACE INTO site_config (key, value) VALUES ('admin_password', ?)"
+    ).bind(hash).run()
   }
 
   const token = await createToken({ role: 'admin' }, c.env.JWT_SECRET)
@@ -128,5 +134,9 @@ async function verifyPassword(password: string, storedHash: string): Promise<boo
     const computedHash = btoa(String.fromCharCode(...new Uint8Array(bits)))
     return computedHash === hash
   }
-  return false
+  // 兼容旧版 SHA-256 无盐格式
+  const encoder = new TextEncoder()
+  const hash = await crypto.subtle.digest('SHA-256', encoder.encode(password))
+  const computedHash = btoa(String.fromCharCode(...new Uint8Array(hash)))
+  return computedHash === storedHash
 }
