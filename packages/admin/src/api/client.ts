@@ -16,14 +16,17 @@ export async function adminFetch<T>(
   const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
   const url = `${API_BASE}${path}`
 
+  const { headers: optHeaders, ...restOpts } = options
+
+  const isFormData = options.body instanceof FormData
+
   const res = await fetch(url, {
-    credentials: 'include',
+    ...restOpts,
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...authHeaders(),
-      ...options.headers,
+      ...optHeaders,
     },
-    ...options,
   })
 
   if (res.status === 401) {
